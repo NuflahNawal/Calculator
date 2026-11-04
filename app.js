@@ -1,98 +1,77 @@
-var display = document.getElementById("display")
+/** @type {HTMLInputElement} */
+var display = document.getElementById("display");
+
+// var display = document.getElementById ("display")
 var historyDisplay = document.getElementById("history")
 
-var currentInput = "0"
-var isNewCalculate = false
+var num1 = " "
+var num2 = " "
+var operator = " "
+var isSecondNumber = false
 
-function updateDisplay () {
-    display.innerText = currentInput
+function number (input) {
+    var isOperate = ( input == "+" || input == "-" || input == "/" || input == "%" || input == "*")
+
+    if (isOperate && isSecondNumber && num2 == "") {
+        operator = input
+        display.value = display.value.slice (0 , -1)
+    } else if (!isSecondNumber && !isOperate ) {
+        num1 += input
+        console.log("num1 " + num1);
+        
+    } else if (!isSecondNumber && isOperate) {
+        operator = input
+        isSecondNumber = true
+        console.log("operator " + operator);
+    } else if (isSecondNumber && !isOperate) {
+        num2 += input
+        console.log("num2 " + num2);
+    }
+    display.value += input
 }
 
-function number (num) {
-    if (isNewCalculate) {
-        currentInput = "";
-        isNewCalculate = false;
-    }
-    if (num === "." && currentInput.includes(".")) {
-        return;
-    }
-    if (currentInput === "0" && num !== ".") {
-        currentInput = num;
-    } else {
-        currentInput = currentInput + num;
-    }
-    updateDisplay();
-}
+function calculateEqual () {
+    var result = ""
+    num1 = Number(num1)
+    num2 = Number(num2)
 
-function operator (op) {
-    isNewCalculate = false;
-
-    var lastChar = currentInput.slice(-1)
-
-    if (["+", "-", "x", "÷", "%"].includes(lastChar)) {
-        currentInput = currentInput.slice(0, -1) + op
-    }else {
-        currentInput = currentInput + op
+    if (operator === "+") {
+        result = num1 + num2
+    } else if (operator === "-") {
+        result = num1 - num2
+    } else if (operator === "*") {
+        result = num1 * num2
+    } else if (operator === "/") {
+        result = num1 / num2
+    } else if (operator === "%") {
+        result = num1 % num2
     }
 
-    updateDisplay()
+    display.value = result
+
+    num1 = result
+    num2 = ""
+    operator = ""
+    isSecondNumber = false
 }
 
 function clearAll () {
-    currentInput = "0";
-    historyDisplay.innerText = "";
-    isNewCalculate = false
-    updateDisplay()
+    display.value = ""
+    num1 = ""
+    num2 = ""
+    isSecondNumber = false
 }
 
-function backSpace() {
-    if (isNewCalculate) {
-        clearAll();
-        return;
-    }
+function backSpace () {
+    if (display.value  === "") return ;
+    display.value = display.value.slice (0 , -1)
 
-    if (currentInput.length === 1 || currentInput === "0") {
-        currentInput = "0";
+    if (isSecondNumber && num2 !== "") {
+        operator = ""
+        isSecondNumber = false
     } else {
-        currentInput = currentInput.slice(0, -1);
-    }
-
-    updateDisplay();
-}
-
-function plusMinus () {
-    if (currentInput === "0") return;
-
-    if (currentInput.startsWith("-")) {
-        currentInput = currentInput.substring(1);
-    } else {
-        currentInput = "-" + currentInput;
-    }
-    updateDisplay ();
-}
-
-function calculate () {
-    try {
-        historyDisplay.innerText = currentInput
-
-        var expression = currentInput
-        expression = expression.replace(/x/g, "*")
-        expression = expression.replace(/÷/g, "/")
-        expression = expression.replace(/%/g, "/100")
-    
-        var result = eval (expression)
-        if (typeof result === "number" && !Number.isInteger (result)) {
-            result =parseFloat(result.toFixed(6));
+        if (num1.length > 0){
+            num1 = num1.slice (0 , -1)
         }
-
-        currentInput = String (result);
-        isNewCalculate = true;
-        updateDisplay();
-
-    } catch (error) {
-        display.innerText = "Error"
-        currentInput = "0";
-        isNewCalculate = true;
     }
 }
-updateDisplay();
