@@ -49,7 +49,7 @@ function calculateEqual () {
 
     display.value = result
 
-    num1 = result
+    num1 = String(result)
     num2 = ""
     operator = ""
     isSecondNumber = false
@@ -67,11 +67,11 @@ function backSpace () {
     display.value = display.value.slice (0 , -1)
 
     if (isSecondNumber && num2 !== "") {
-        operator = ""
-        isSecondNumber = false
+        num2 = num2.slice(0, -1);
+    } else if (isSecondNumber && num2 === "") {
+        operator = "";
+        isSecondNumber = false;
     } else {
-        if (num1.length > 0){
-            num1 = num1.slice (0 , -1)
-        }
+        num1 = num1.slice(0, -1);
     }
 }
